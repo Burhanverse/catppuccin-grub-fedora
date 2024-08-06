@@ -34,11 +34,12 @@
 </details>
 
 ## Usage
+Note: This usage guide is stripped down for fedora users. WHY?? In simple words fedora handles grub in the most weirdest way possible.  
 
 1. Clone this repository locally and enter the cloned folder:
-
+  
     ```shell
-    git clone https://github.com/catppuccin/grub.git && cd grub
+    git clone https://github.com/Burhanverse/catppuccin-grub-fedora.git && cd catppuccin-grub-fedora
     ```
 
 2. Copy all or selected theme from `src` folder to
@@ -48,8 +49,12 @@
     sudo cp -r src/* /usr/share/grub/themes/
     ```
 
-3. Uncomment and edit following line in `/etc/default/grub` to your selected
-   theme:
+3. Open `/etc/default/grub` in nano editor:
+
+    ```shell
+    sudo nano /etc/default/grub
+    ```
+    And then add the following line in it. Edit `<flavor>` according to your selected theme:
 
     ```shell
     GRUB_THEME="/usr/share/grub/themes/catppuccin-<flavor>-grub-theme/theme.txt"
@@ -58,24 +63,40 @@
 4. Update grub:
 
     ```shell
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
+    sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
     ```
-
-    For Fedora:
-
-    ```shell
-    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-    ```
-
-## 💿 Ventoy Support
-
-See instructions in the [ventoy directory](ventoy/).
 
 ## 🙋 FAQ
+**Q: _"How to fix the missing icon of UEFI Firmware settings?"_**
 
-- Q: **_"How can I make Grub work with my screen resolution?"_**
+**A:** To fix the missing icon, you need to edit the `grub.cfg` file, as each entry in GRUB is assigned to a class. For example, Windows is assigned `--class windows`. We need to manually add a `--class` for the UEFI entry.
 
-  A: Uncomment and edit following line in `/etc/default/grub` (modify
+1. Open the `grub.cfg` file with a text editor:
+   ```shell
+   sudo nano /boot/efi/EFI/fedora/grub.cfg
+   ```
+
+2. Find the section for "UEFI Firmware Settings," which typically looks like this:
+   ```shell
+   ### BEGIN /etc/grub.d/39_uefi-firmware ###
+   if [ "$grub_platform" = "efi" ]; then
+           menuentry 'UEFI Firmware Settings' $menuentry_id_option 'uefi-firmware' {
+                   fwsetup
+           }
+   fi
+   ### END /etc/grub.d/39_uefi-firmware ###
+   ```
+
+3. Notice there's no `--class` assigned to this entry. Add `--class efi` to it like this:
+   ```shell
+   menuentry 'UEFI Firmware Settings' --class efi $menuentry_id_option 'uefi-firmware'
+   ```
+
+4. Save the file and reboot to apply the changes.
+
+**Q: _"How can I make Grub work with my screen resolution?"_**
+
+  **A:** Uncomment and edit following line in `/etc/default/grub` (modify
   `1920x1080` to your screen resolution):
 
   ```shell
@@ -84,9 +105,9 @@ See instructions in the [ventoy directory](ventoy/).
 
   Proceed to update grub (see step 4 of the installation)
 
-- Q: **_"How can I make Grub detect all my operating systems? (dual-boot)"_**
+**Q: _"How can I make Grub detect all my operating systems? (dual-boot)"_**
 
-  A: Make sure you have `os-prober` installed. Add or uncomment following line
+  **A:** Make sure you have `os-prober` installed. Add or uncomment following line
     in `/etc/default/grub` :
 
   ```shell
@@ -95,9 +116,9 @@ See instructions in the [ventoy directory](ventoy/).
 
   Save that file and update grub (see step 4 of the installation)
 
-- Q: **_"How can I make Grub detect my theme?"_**
+**Q: _"How can I make Grub detect my theme?"_**
 
-  A: Make sure to **comment** the following line in `/etc/default/grub`:
+**A:** Make sure to **comment** the following line in `/etc/default/grub`:
 
   ```
   GRUB_TERMINAL_OUTPUT="console"
@@ -116,4 +137,4 @@ See instructions in the [ventoy directory](ventoy/).
 
 <p align="center"><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" /></p>
 <p align="center">Copyright &copy; 2021-present <a href="https://github.com/catppuccin" target="_blank">Catppuccin Org</a>
-<p align="center"><a href="https://github.com/catppuccin/catppuccin/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&logoColor=d9e0ee&colorA=363a4f&colorB=b7bdf8"/></a></p>
+<p align="center"><a href="https://github.com/Burhanverse/catppuccin-grub-fedora/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&logoColor=d9e0ee&colorA=363a4f&colorB=b7bdf8"/></a></p>
